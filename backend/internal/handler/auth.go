@@ -34,3 +34,19 @@ func (h* AuthHandler) Register(c *gin.Context) {
 
 	utils.SuccessResponse(c,user)
 }
+
+func (h *AuthHandler) Login(c *gin.Context) {
+	var req models.LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		utils.ErrorResponse(c,http.StatusBadRequest,err.Error())
+		return
+	}
+
+	response,err := h.authService.Login(&req)
+	if err != nil {
+		utils.ErrorResponse(c,http.StatusUnauthorized,err.Error())
+		return
+	}
+
+	utils.SuccessResponse(c,response)
+}

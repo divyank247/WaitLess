@@ -22,7 +22,7 @@ func main() {
 	defer db.Close()
 
 	if err := database.RunMigrations(db); err != nil {
-		log.Fatal("Failed tp run migration", err)
+		log.Fatal("Failed to run migration", err)
 	}
 
 	authService := services.NewAuthService(db)
@@ -50,6 +50,7 @@ func main() {
 		auth := api.Group("/auth") 
 		{
 			auth.POST("/register",authHandler.Register)
+			auth.POST("/login",authHandler.Login)
 		}
 	}
 
