@@ -1,0 +1,10 @@
+.env
+/go.sum
+*.log
+*.out
+vendor/
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
