@@ -5,6 +5,7 @@ import (
 	"waitless-backend/internal/config"
 	"waitless-backend/internal/database"
 	"waitless-backend/internal/handler"
+	"waitless-backend/internal/middleware"
 	"waitless-backend/internal/services"
 
 	"github.com/gin-contrib/cors"
@@ -26,8 +27,10 @@ func main() {
 	}
 
 	authService := services.NewAuthService(db)
+	queueService := services.NewQueueService(db)
 
 	authHandler := handler.NewAuthHandler(authService)
+	queueHandler := handler.NewQueueHandler(queueService)
 
 	router := gin.Default()
 
@@ -51,6 +54,11 @@ func main() {
 		{
 			auth.POST("/register",authHandler.Register)
 			auth.POST("/login",authHandler.Login)
+		}
+
+		queues := api.Group("/queues")
+		{
+			queues.POST("",middleware.AuthMiddleware(),middleware.AdminMiddleware(),queueHandler.CreateQueue)
 		}
 	}
 

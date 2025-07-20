@@ -1,6 +1,10 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Queue struct {
 	ID uuid.UUID `json:"id" db:"id"`
@@ -8,7 +12,7 @@ type Queue struct {
 	Description string `json:"description" db:"description"`
 	AdminID uuid.UUID `json:"admin_id" db:"admin_id"`
 	IsActive bool `json:"is_active" db:"is_active"`
-	CreatedAt uuid.Time `json:"created_at" db:"created_at"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	AdminName string `json:"admin_name,omitempty" db:"admin_name"`
 	TicketCount int `json:"ticket_count,omitempty" db:"ticket_count"`
 }

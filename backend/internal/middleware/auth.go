@@ -38,3 +38,15 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func AdminMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		role ,exists := c.Get("user_role")
+		if !exists || role != "admin" {
+			utils.ErrorResponse(c,http.StatusForbidden,"Admin access required")
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}
