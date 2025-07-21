@@ -14,7 +14,7 @@ type Queue struct {
 	IsActive bool `json:"is_active" db:"is_active"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	AdminName string `json:"admin_name,omitempty" db:"admin_name"`
-	TicketCount int `json:"ticket_count,omitempty" db:"ticket_count"`
+	TicketCount int `json:"ticket_count" db:"ticket_count"`
 }
 
 type CreateQueueRequest struct {

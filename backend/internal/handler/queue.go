@@ -40,3 +40,13 @@ func (h *QueueHandler) CreateQueue(c *gin.Context) {
 	}
 	utils.SuccessResponse(c,queue)
 }
+
+func (h *QueueHandler) GetQueues(c *gin.Context) {
+	queues, err := h.queueService.GetQueues()
+	if err != nil {
+		utils.ErrorResponse(c,http.StatusInternalServerError,err.Error())
+		return
+	}
+
+	utils.SuccessResponse(c,queues)
+}

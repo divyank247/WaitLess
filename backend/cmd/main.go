@@ -58,6 +58,7 @@ func main() {
 
 		queues := api.Group("/queues")
 		{
+			queues.GET("",queueHandler.GetQueues)
 			queues.POST("",middleware.AuthMiddleware(),middleware.AdminMiddleware(),queueHandler.CreateQueue)
 		}
 	}
