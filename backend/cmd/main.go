@@ -60,6 +60,7 @@ func main() {
 		{
 			queues.GET("",queueHandler.GetQueues)
 			queues.POST("",middleware.AuthMiddleware(),middleware.AdminMiddleware(),queueHandler.CreateQueue)
+			queues.POST("/:id/join", middleware.AuthMiddleware(),queueHandler.JoinQueue)
 		}
 	}
 

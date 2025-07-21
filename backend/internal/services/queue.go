@@ -67,3 +67,42 @@ func (s *QueueService) GetQueues() ([]models.Queue, error) {
 
 	return queues,nil
 }
+
+func (s *QueueService) JoinQueue(queueID,userID uuid.UUID) (*models.Ticket,error) {
+	var exists bool
+	err := s.db.QueryRow("SELECT EXISTS(SELECT 1 FROM tickets WHERE queue_id = $1 AND user_id = $2 AND status ='waiting')",queueID,userID).Scan(&exists)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to check ticket existence: %w",err)
+	}
+	if exists {
+		return nil,fmt.Errorf("user already in queue")
+	}
+
+	var nextPosition int
+
+	err = s.db.QueryRow("SELECT COALESCE(MAX(position),0) + 1 FROM tickets WHERE queue_id = $1", queueID).Scan(&nextPosition)
+
+	if err != nil {
+		return nil,fmt.Errorf("failed to get next position: %w",err)
+	}
+
+	ticket := &models.Ticket{
+		QueueID: queueID,
+		UserID: userID,
+		Position: nextPosition,
+		Status: models.StatusWaiting,
+	}
+
+	query := `
+	INSERT INTO tickets (queue_id,user_id,position,status)
+	VALUES($1,$2,$3,$4)
+	RETURNING id, created_at`
+
+	err = s.db.QueryRow(query,ticket.QueueID,ticket.UserID,ticket.Position,ticket.Status).Scan(&ticket.ID,&ticket.CreatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create ticket: %w",err)
+	}
+
+	return ticket, nil
+}
