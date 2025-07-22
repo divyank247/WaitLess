@@ -8,7 +8,7 @@ import (
 
 type Response struct {
 	Success bool `json:"success"`
-	Message bool `json:"message,omitempty"`
+	Message string `json:"message,omitempty"`
 	Data interface{} `json:"data,omitempty"`
 	Error string `json:"error,omitempty"`
 }
@@ -24,5 +24,12 @@ func ErrorResponse(c *gin.Context,statusCode int,message string){
 	c.JSON(statusCode,Response{
 		Success: false,
 		Error: message,
+	})
+}
+
+func MessageResponse(c *gin.Context,message string) {
+	c.JSON(http.StatusOK,Response {
+		Success: true,
+		Message: message,
 	})
 }

@@ -74,3 +74,25 @@ func (h *QueueHandler) JoinQueue(c* gin.Context) {
 
 	utils.SuccessResponse(c,ticket)
 }
+
+func (h *QueueHandler) LeaveQueue(c *gin.Context) {
+	queueIDStr := c.Param("id")
+	queueID, err := uuid.Parse(queueIDStr)
+	if err != nil {
+		utils.ErrorResponse(c,http.StatusBadRequest,"Invalid Queue ID")
+		return
+	}
+
+	userID, exists := c.Get("user_id")
+	if !exists {
+		utils.ErrorResponse(c,http.StatusUnauthorized,"User not Authenticated")
+		return
+	}
+	
+	err = h.queueService.LeaveQueue(queueID,userID.(uuid.UUID))
+	if err != nil {
+		utils.ErrorResponse(c,http.StatusBadRequest,err.Error())
+		return
+	}
+	utils.MessageResponse(c,"Left queue successfully")
+}

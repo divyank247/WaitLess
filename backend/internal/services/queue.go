@@ -106,3 +106,25 @@ func (s *QueueService) JoinQueue(queueID,userID uuid.UUID) (*models.Ticket,error
 
 	return ticket, nil
 }
+
+func (s *QueueService) LeaveQueue(queueID, userID uuid.UUID) error {
+	var position int
+	err := s.db.QueryRow("SELECT position FROM tickets WHERE queue_id = $1 AND user_id = $2 AND status = 'waiting'",queueID,userID).Scan(&position)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("ticket not found")
+		}
+		return fmt.Errorf("failed to get ticket position: %w",err)
+	}
+
+	_,err = s.db.Exec("DELETE FROM tickets WHERE queue_id = $1 AND user_id = $2 AND status = 'waiting'",queueID,userID)
+	if err != nil {
+		return fmt.Errorf("failed to delete ticket: %w",err)
+	}
+
+	_,err = s.db.Exec("UPDATE tickets SET position = position - 1 WHERE queue_id = $1 AND position > $2 AND status = 'waiting'",queueID,position)
+	if err != nil {
+		return fmt.Errorf("failed to update position: %w",err)
+	}
+	return nil
+}
